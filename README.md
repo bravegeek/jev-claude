@@ -25,12 +25,14 @@ git clone https://github.com/bravegeek/jev-claude ~/dev/jev-claude && cd ~/dev/j
 # key (OpenRouter); or export OPENROUTER_API_KEY
 mkdir -p ~/.config/jev && read -s k && echo "$k" > ~/.config/jev/openrouter_key && chmod 600 ~/.config/jev/openrouter_key
 
-# levels 5 (subagents), 8-9, every project
-claude mcp add --scope user jev -- node ~/dev/jev-claude/mcp/server.ts
+# levels 5 (subagents), 8-9, one project at a time (run inside the project; private to you, not committed)
+cd ~/dev/some-project && claude mcp add --scope local jev -- node ~/dev/jev-claude/mcp/server.ts
 
 # levels 5 (you), 6-7, one project at a time (writes .claude/settings.local.json, git-excluded)
 node ~/dev/jev-claude/bin/enable.ts ~/dev/some-project        # --off to remove
 ```
+
+Both are opt-in per project on purpose. Avoid `--scope user` for the MCP server: Claude could then send file contents from any project to OpenRouter. And an "ask" permission rule can't be loosened per project, because ask beats allow wherever the rules live. Opting in per project lets you choose "don't ask again" where you want Jev, and leaves it out of every other project.
 
 ## Differences from the pi version
 
