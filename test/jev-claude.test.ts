@@ -24,8 +24,7 @@ writeFileSync(join(project, "app/[id].ts"), "export const page = 1;\n");
 writeFileSync(join(project, ".env"), "OPENROUTER_API_KEY=sk-real\n");
 symlinkSync("/etc/hostname", join(project, "sneaky.txt"));
 
-const REPO = join(process.env.HOME!, "dev/ten-levels-of-jev/apps/ten-levels");
-const mockEnv = { PATH: process.env.PATH!, HOME: tmp, JEV_REPO: REPO, JEV_BACKEND: "mock", JEV_LOG: join(tmp, "log.jsonl") };
+const mockEnv = { PATH: process.env.PATH!, HOME: tmp, JEV_BACKEND: "mock", JEV_LOG: join(tmp, "log.jsonl") };
 
 function hook(script: string, input: object, env: Record<string, string> = mockEnv) {
   const r = spawnSync("node", [join(HERE, "hooks", script)], { input: JSON.stringify(input), env, encoding: "utf8" });
@@ -71,7 +70,7 @@ test("guard: PostToolUse reads tool_response and answers in Claude Code's format
 });
 
 test("guard: with no credentials it fails open, prints nothing, and logs the error", () => {
-  const env = { PATH: process.env.PATH!, HOME: tmp, JEV_REPO: REPO, JEV_LOG: join(tmp, "fail.jsonl") };
+  const env = { PATH: process.env.PATH!, HOME: tmp, JEV_LOG: join(tmp, "fail.jsonl") };
   const out = hook("guard.ts", { hook_event_name: "PreToolUse", tool_name: "Bash", cwd: project, tool_input: { command: "rm -rf /" } }, env);
   assert.equal(out, null);
   assert.match(readFileSync(env.JEV_LOG, "utf8"), /No Jev credentials/);

@@ -1,14 +1,14 @@
 /**
  * Shared setup: credentials, the path to the ten-levels code, and a fail-open timeout.
  *
- * The level logic is imported from the cloned repo, not copied, so `git pull` there picks up fixes.
+ * The level logic is vendored from disler/ten-levels-of-jev in vendor/ten-levels (see its README).
  * Credentials: OPENROUTER_API_KEY from the environment, else ~/.config/jev/openrouter_key.
  */
 import { existsSync, readFileSync } from "node:fs";
 import { homedir } from "node:os";
 import { join } from "node:path";
 
-export const REPO = process.env.JEV_REPO ?? join(homedir(), "dev/ten-levels-of-jev/apps/ten-levels");
+export const VENDOR = join(import.meta.dirname, "../vendor/ten-levels");
 const KEY_FILE = process.env.JEV_KEY_FILE ?? join(homedir(), ".config/jev/openrouter_key");
 
 /** Load the key file if no key is set yet. Called per call, so a long-lived MCP server picks up a key created after it started. */
@@ -19,11 +19,11 @@ export function ensureKey(): void {
 }
 ensureKey();
 
-/** Import a module from the ten-levels repo, e.g. level("level06/index.ts"). */
-export const level = (rel: string) => import(join(REPO, "src/levels", rel));
+/** Import a module from the vendored ten-levels code, e.g. level("level06/index.ts"). */
+export const level = (rel: string) => import(join(VENDOR, "src/levels", rel));
 
-/** Import a module from the repo's core, e.g. core("helpers.ts"). */
-export const core = (rel: string) => import(join(REPO, "src/core", rel));
+/** Import a module from the vendored core, e.g. core("helpers.ts"). */
+export const core = (rel: string) => import(join(VENDOR, "src/core", rel));
 
 /** Hooks must never hang the session. Past the deadline the hook gives up and allows. */
 export function withTimeout<T>(p: Promise<T>, ms = Number(process.env.JEV_HOOK_TIMEOUT_MS ?? 5000)): Promise<T> {
@@ -57,6 +57,6 @@ export async function log(entry: Record<string, unknown>) {
 /** The repo's shared client. Lazy: provider and key resolve on the first call. */
 export async function systemOne(state: unknown, questions: unknown): Promise<{ answers: any; usage?: unknown }> {
   ensureKey();
-  const { jev } = await import(join(REPO, "src/core/client.ts"));
+  const { jev } = await import(join(VENDOR, "src/core/client.ts"));
   return jev.systemOne(state, questions);
 }
