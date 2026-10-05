@@ -1,0 +1,17 @@
+{
+  "name": "jev-claude",
+  "version": "0.1.0",
+  "description": "Levels 5-9 of disler/ten-levels-of-jev, ported to Claude Code hooks and an MCP server",
+  "type": "module",
+  "private": true,
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "test": "node --test \"test/**/*.test.ts\""
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.32.0",
+    "zod": "^4.6.5"
+  }
+}
